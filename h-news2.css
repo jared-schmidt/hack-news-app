@@ -1,0 +1,10 @@
+/* CSS declarations go here */
+.center {
+    margin-left: auto;
+    margin-right: auto;
+    width: 70%;
+}
+
+.defaultstyles * {
+position: auto !important; color: auto !important; background-color: auto !important; padding: auto !important; margin: auto !important; border: auto !important; font: auto !important; font-weight: auto !important; font-style: auto !important; text-align: auto !important; line-height: auto !important; text-decoration: auto !important; letter-spacing: auto !important; text-indent: auto !important; white-space: auto !important;
+}
