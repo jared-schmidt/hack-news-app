@@ -16,6 +16,56 @@
 //   });
 // }
 
+if (Meteor.isCordova){
+    Meteor.startup(function(){
+      window.cordova.require('org.apache.cordova.inappbrowser.inappbrowser');
+    });
+
+  // Wait for device API libraries to load
+   //
+  //  document.addEventListener("deviceready", onDeviceReady, false);
+
+   // Global InAppBrowser reference
+   var iabRef = null;
+
+   function iabLoadStart(event) {
+      //  alert(event.type + ' - ' + event.url);
+       console.log("Device start");
+   }
+
+   function iabLoadStop(event) {
+      //  alert(event.type + ' - ' + event.url);
+      console.log("Device stop");
+      var p = document.createElement("p");
+      p.innerHTML = "test1";
+      iabRef.executeScript({
+       code: "console.log('hello world');document.body.insertBefore("+p+", document.body.firstChild);"
+      }, function(){
+       alert("done");
+      });
+   }
+
+   function iabLoadError(event) {
+      //  alert(event.type + ' - ' + event.message);
+       console.log("Device error");
+   }
+
+   function iabClose(event) {
+        // alert(event.type);
+        console.log("Device close");
+        iabRef.removeEventListener('loadstart', iabLoadStart);
+        iabRef.removeEventListener('loadstop', iabLoadStop);
+        iabRef.removeEventListener('loaderror', iabLoadError);
+        iabRef.removeEventListener('exit', iabClose);
+   }
+
+   // device APIs are available
+   //
+   function onDeviceReady() {
+        console.log("Device Ready");
+   }
+}
+
 // if (Meteor.isCordova) {
 
   Template.home.rendered = function(){
@@ -62,8 +112,7 @@
           var newss = this.props.data.map( function(news, i) {
               return <News
                 key={i}
-                news={news}
-              />
+                news={news} />
           });
 
           return (
@@ -101,15 +150,19 @@
           });
       },
       test: function(url){
-          $("#ajax").html(data);
+          iabRef = window.open(url, '_blank', 'location=no');
+          iabRef.addEventListener('loadstart', iabLoadStart);
+          iabRef.addEventListener('loadstop', iabLoadStop);
+          iabRef.removeEventListener('loaderror', iabLoadError);
+          iabRef.addEventListener('exit', iabClose);
       },
       render: function() {
           return (
                   <div className='panel panel-default'>
                     <div className="panel-body">
                       <span className='news_title'>
-                        // <a onClick={this.test.bind(this, this.state.url)} >{this.state.title}</a>
-                        <a href={this.state.url} >{this.state.title}</a>
+                        <a onClick={this.test.bind(this, this.state.url)} >{this.state.title}</a>
+                        // <a href={this.state.url} >{this.state.title}</a>
                       </span>
                     </div>
                     <div className="panel-footer">
